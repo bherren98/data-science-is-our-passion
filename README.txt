@@ -1,33 +1,18 @@
-Author: Brandon Herren (bsh46)
-Date: 10/7/2019
+README
 
-Files:
+netID:
+Pomaikai Canaday pmc101@georgetown.edu
 
-billboard_wikipedia_scraping.py:
-	Scrapes Billboard Year-End Top 100 data from 1963 to 2018.
 
-last_fm_genre_finder.py
-	Scrapes genre tags from last.fm API for each top song.
+####Notes for the TA#######
+This is a lot of scraping. On estimate, it will take you 30-40 minutes for this program to run. I put in place print statements as an indicator to where you currently are in terms of going through the songs and artist. Please don't be alarmed if it takes a while. 
+###########################
 
-musicbrainz_gender_determiner.py
-	Scrapes gender/group status from musicbrainz API for each top song.
+Billboard-Year-End-Data_with_Fixed_Genres_10-05-2019_140320.json
+	- Data collected from the LastFM api call. We use the Artist and Songs from this data set to set up our call in Lyrics_FandomData.py
 
-Billboard-Year-End-Data_DATETIME.json
-	Output file that includes rank, song name, artist name, year
+Lyrics_FandomData.py:
+	- This contains the code to scrape the https://lyrics.fandom.com for the lyrics from the artist and songs from the Billboard. We used this website because it was easy to scrape the data. 
 
-Billboard-Year-End-Data_with_Genre_DATETIME.json
-	Output file that includes rank, song name, artist name, year, genre tags (uncleaned) | 412 incomplete columns
-
-Billboard-Year-End-Data_with_Fixed_Genres_DATETIME.json
-	Output file that includes rank, song name, artist name, year, genre tags (cleaned) | 78 incomplete columns
-
-### COULD NOT GET BECAUSE API WAS DOWN SO KEPT ORIGINAL VERSION OF DATA
-Billboard-Year-End-Data_with_Fixed_Genres_and_Gender_DATETIME.json
-	Output file that includes rank, song name, artist name, year, genre tags (cleaned), type, gender
-
-### ORIGINAL VERSION OF DATA
-artist_data_DATETIME.json
-	Output file that includes artist name, type, gender | 401 incomplete columns
-
-README.txt
-	this file!
+LyricData.csv:
+	- This is the finished the data set from Lyrics_FandomData.py which contains lyrics to a specific song.
