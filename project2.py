@@ -32,6 +32,8 @@ from sklearn.metrics import silhouette_samples, silhouette_score
 import matplotlib.pyplot as plt
 import ast
 import warnings
+from sklearn.cluster import AgglomerativeClustering
+import scipy.cluster.hierarchy as sch
 
 
 ######################################################
@@ -151,7 +153,16 @@ def Classifications(data, attributeAmount):
 		results.append(cv_results)
 		names.append(name)
 		msg = "%s: %f (%f)" % (name, cv_results.mean(), cv_results.std())
-		print(msg)	
+		print(msg)
+
+		model.fit(X_train, Y_train)
+		model_predictions = model.predict(X_validate)
+
+		print()
+		print("Validation: " + name)
+		print(accuracy_score(Y_validate, model_predictions))
+		print(confusion_matrix(Y_validate, model_predictions))
+		print(classification_report(Y_validate, model_predictions))
 
 
 	#The following is an array of the classifiers that we use.
@@ -173,11 +184,38 @@ def Classifications(data, attributeAmount):
 			warnings.filterwarnings("ignore")
 			model.fit(X_train, Y_train) #training the ML classifier
 			y_pred = model.predict(X_validate) #using the model to predict y values for the given X_validate set
-			print("Accuracy for ", name, ": ",metrics.accuracy_score(Y_validate, y_pred)) #Gives us the the accuracy of the classifier
+			#print("Accuracy for ", name, ": ",metrics.accuracy_score(Y_validate, y_pred)) #Gives us the the accuracy of the classifier
+
+			print()
+			print("Validation: " + name)
+			print(accuracy_score(Y_validate, model_predictions))
+			print(confusion_matrix(Y_validate, model_predictions))
+			print(classification_report(Y_validate, model_predictions))
+
+###########################################################
+# RUNNING HIERARCHICAL CLUSTERING FOR RANK AND ARTIST
+# Using the Ward hierarchical clustering method to give us 
+# more insight on the data
+###########################################################
+def HierarchicalClustering(myData):
+	x = myData.iloc[:, [1, 2]].values
+	dendrogram = sch.dendrogram(sch.linkage(x, method='ward'))
+	model = AgglomerativeClustering(n_clusters=5, affinity='euclidean', linkage='ward')
+	model.fit(x)
+	labels = model.labels_
+	plt.scatter(x[labels==0, 0], x[labels==0, 1], s=50, marker='o', color='green')
+	plt.scatter(x[labels==1, 0], x[labels==1, 1], s=50, marker='o', color='blue')
+	plt.scatter(x[labels==2, 0], x[labels==2, 1], s=50, marker='o', color='red')
+	plt.scatter(x[labels==3, 0], x[labels==3, 1], s=50, marker='o', color='orange')
+	plt.scatter(x[labels==4, 0], x[labels==4, 1], s=50, marker='o', color='purple')
+	plt.show()
+
+	print("Silhouette Score for cluster: " + str(metrics.silhouette_score(x, labels, metric='euclidean')))
 
 ###########################################################
 # BINNING DATA
-# Here we are creatin
+# Here we are creating a new column to check the whether a 
+# song is listed as a top 20 in that year. 
 ###########################################################
 def AddingColumn(dataframe, newColumn , attribute, number):
 	df = dataframe
@@ -189,17 +227,18 @@ def AddingColumn(dataframe, newColumn , attribute, number):
 # MAIN METHOD WHERE WE TEST EVERYTHING
 ###########################################################
 def main():
-
 	music_data = "music_data.csv"
 	attributeNames = ['title', 'artist(s)', 'rank', 'year', 'genres']
 	myData = pandas.read_csv(music_data, names=attributeNames)
-
-	#print(myData.dtypes)
+	
 	print(myData.mode(dropna=False))
 	myData = myData.drop(myData.index[0])
 
 	myData_cat = catergorical_to_numeric(myData)
 	myData_cat = rankDic(myData_cat)
+
+	HierarchicalClustering(myData_cat)
+
 	Summary(myData)
 	df = AddingColumn(myData_cat, 'rank >= 50', 'rank', 20)
 
